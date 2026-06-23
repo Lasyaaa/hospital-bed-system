@@ -16,7 +16,11 @@ app.use(cors());
 app.use(express.json());
 // Routes
 const authRoutes = require('./routes/authRoutes');
+const hospitalRoutes = require('./routes/hospitalRoutes');
+const bedRoutes = require('./routes/bedRoutes');
 app.use('/api/auth', authRoutes);
+app.use('/api/hospitals', hospitalRoutes);
+app.use('/api/beds', bedRoutes);
 // Health check route
 app.get('/', (req, res) => {
   res.json({ message: 'Hospital Bed API is running' });
