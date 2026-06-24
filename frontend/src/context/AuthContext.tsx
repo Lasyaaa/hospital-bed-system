@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import type { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
     }
+
   }, []);
 
   const login = (user: User, token: string) => {

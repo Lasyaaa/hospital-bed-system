@@ -1,4 +1,4 @@
-import { BedAvailability } from '../types';
+import type { BedAvailability } from '../types';
 
 interface Props {
   beds: BedAvailability[];
