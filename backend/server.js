@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 
 // Load environment variables from .env file
@@ -10,7 +12,20 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
+// Create raw HTTP server from Express app
+const server = http.createServer(app);
+// Attach Socket.IO to the HTTP server
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+  },
+});
+// Make io accessible in controllers via req.io
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -21,6 +36,15 @@ const bedRoutes = require('./routes/bedRoutes');
 app.use('/api/auth', authRoutes);
 app.use('/api/hospitals', hospitalRoutes);
 app.use('/api/beds', bedRoutes);
+// Socket.IO connection handler
+io.on('connection', (socket) => {
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on('disconnect', () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+});
+
 // Health check route
 app.get('/', (req, res) => {
   res.json({ message: 'Hospital Bed API is running' });
@@ -33,6 +57,6 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });

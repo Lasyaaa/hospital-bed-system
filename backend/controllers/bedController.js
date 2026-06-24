@@ -52,6 +52,7 @@ const updateBeds = async (req, res) => {
     if (!beds) {
       return res.status(404).json({ message: 'Bed data not found for this hospital' });
     }
+    req.io.emit('bedUpdated', beds);
 
     // Socket.IO event will be emitted here in Phase 8
     // req.io.emit('bedUpdated', { hospitalId: req.params.hospitalId, beds });
