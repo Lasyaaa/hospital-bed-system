@@ -14,6 +14,10 @@ connectDB();
 const app = express();
 // Create raw HTTP server from Express app
 const server = http.createServer(app);
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.CLIENT_URL,
+].filter(Boolean);
 // Attach Socket.IO to the HTTP server
 const io = new Server(server, {
   cors: {
@@ -21,13 +25,17 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 // Make io accessible in controllers via req.io
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
 // Middleware
-app.use(cors());
+//app.use(cors());
 app.use(express.json());
 // Routes
 const authRoutes = require('./routes/authRoutes');
